@@ -12,6 +12,7 @@ from encoder import get_encoder
 
 def download_gpt2_files(model_size, model_dir):
     assert model_size in ["124M", "355M", "774M", "1558M"]
+    url = "https://openaipublic.blob.core.windows.net/gpt-2/models"
     for filename in [
         "checkpoint",
         "encoder.json",
@@ -21,19 +22,13 @@ def download_gpt2_files(model_size, model_dir):
         "model.ckpt.meta",
         "vocab.bpe",
     ]:
-        url = "https://openaipublic.blob.core.windows.net/gpt-2/models"
         r = requests.get(f"{url}/{model_size}/{filename}", stream=True)
         r.raise_for_status()
 
         with open(os.path.join(model_dir, filename), "wb") as f:
             file_size = int(r.headers["content-length"])
             chunk_size = 1000
-            with tqdm(
-                ncols=100,
-                desc="Fetching " + filename,
-                total=file_size,
-                unit_scale=True,
-            ) as pbar:
+            with tqdm(ncols=100, desc=f"Fetching {filename}", total=file_size, unit_scale=True) as pbar:
                 # 1k for chunk_size, since Ethernet packet size is around 1500 bytes
                 for chunk in r.iter_content(chunk_size=chunk_size):
                     f.write(chunk)

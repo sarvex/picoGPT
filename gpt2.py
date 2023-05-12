@@ -109,10 +109,7 @@ def main(prompt: str, n_tokens_to_generate: int = 40, model_size: str = "124M", 
     # generate output ids
     output_ids = generate(input_ids, params, hparams["n_head"], n_tokens_to_generate)
 
-    # decode the ids back into a string
-    output_text = encoder.decode(output_ids)
-
-    return output_text
+    return encoder.decode(output_ids)
 
 
 if __name__ == "__main__":
